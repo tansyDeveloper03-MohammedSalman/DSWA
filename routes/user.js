@@ -38,7 +38,7 @@ router.post("/signup", async (req, res) => {
 
   // jwt
   const token = user.generateAuthToken();
-  res.header("x-auth-token", token).send("success");
+  res.header("x-auth-token", token).send(token);
 });
 
 router.post("/login", async (req, res) => {
