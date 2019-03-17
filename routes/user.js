@@ -35,10 +35,15 @@ router.post("/signup", async (req, res) => {
 
   // save the post data
   user = await user.save();
-
+  const payload = {
+    _id: user._id,
+    first_name: user.first_name,
+    last_name: user.last_name
+  };
   // jwt
+
   const token = user.generateAuthToken();
-  res.header("x-auth-token", token).send(token);
+  res.header("x-auth-token", token).send({ token, payload });
 });
 
 router.post("/login", async (req, res) => {
@@ -54,6 +59,12 @@ router.post("/login", async (req, res) => {
   const validPassword = req.body.password === user.password;
 
   if (!validPassword) return res.status(400).send("Invalid email and password");
+
+  const payload = {
+    _id: user._id,
+    first_name: user.first_name,
+    last_name: user.last_name
+  };
   // audit_login insert
   auditLogin
     .create({
@@ -63,17 +74,15 @@ router.post("/login", async (req, res) => {
       ip_address: ip.address()
     })
     .then(profile => {
-      console.log(profile);
       profile
         .save()
         .then(() => console.log("insert"))
         .catch(err => console.error("insert error"));
     })
     .catch(err => console.log(err));
-
   const token = user.generateAuthToken();
 
-  res.send(token);
+  res.send({ token, payload });
 });
 
 router.post("/changepassword", auth, async (req, res) => {
