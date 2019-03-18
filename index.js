@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const config = require("config");
 const app = express();
+const profile = require("./routes/profile");
 
 config["jwtPrivateKey"] = "mySecureKey";
 
@@ -35,6 +36,8 @@ mongoose
 // export dswa_jwtPrivateKey=mySecureKey
 
 app.use("/api/dswa", User);
+// app.use("/feeds", feed);
+app.use("/api/profile", profile);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
