@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
+const { User } = require("../models/user");
 const {
   Profile,
   validateProfile,
@@ -122,8 +123,8 @@ router.post("/", auth, (req, res) => {
   if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
   if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
-  Profile.findOne({ user: req.user._id }).then(profile => {
-    // console.log(profileFields.handle);
+  Profile.findOne({ user: req.user.id }).then(profile => {
+    console.log(profile);
     if (profile) {
       // update
       Profile.findOneAndUpdate(
@@ -137,7 +138,7 @@ router.post("/", auth, (req, res) => {
       Profile.findOne({ handle: profileFields.handle }).then(profile => {
         if (profile) {
           errors.handle = "That handle already exists";
-          res.status(404).json(errors);
+          res.status(400).json(errors);
         }
 
         //
@@ -243,8 +244,8 @@ router.delete("/education/:edu_id", auth, (req, res) => {
 // @description   delete user and profile
 // @access        private
 router.delete("/", auth, (req, res) => {
-  Profile.findOneAndRemove({ user: req.user.id }).then(() => {
-    User.findOneAndRemove({ _id: req.user.id }).then(() => {
+  Profile.findOneAndRemove({ user: req.user._id }).then(() => {
+    User.findOneAndRemove({ _id: req.user._id }).then(() => {
       res.json({ success: true });
     });
   });
