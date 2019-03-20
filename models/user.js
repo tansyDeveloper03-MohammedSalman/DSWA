@@ -143,7 +143,35 @@ function validateLogin(data) {
   };
 }
 
+function validatechangePassword(data) {
+  let errors = {};
+
+  data.password = !isEmpty(data.password) ? data.password : "";
+  data.password2 = !isEmpty(data.password2) ? data.password2 : "";
+
+  if (!Validator.isLength(data.password, { min: 2, max: 30 })) {
+    errors.password = "password must be length 2 to 30 characters";
+  }
+
+  if (Validator.isEmpty(data.password)) {
+    errors.password = "password field is required";
+  }
+
+  if (Validator.isEmpty(data.password2)) {
+    errors.password2 = "Confirm Password field is required";
+  } else {
+    if (!Validator.equals(data.password, data.password2)) {
+      errors.password2 = "Passwords must match";
+    }
+  }
+  return {
+    errors,
+    isValid: isEmpty(errors)
+  };
+}
+
 exports.userSchema = userSchema;
 exports.User = User;
+exports.validatechangePassword = validatechangePassword;
 exports.validate = validateUser;
 exports.validateLogin = validateLogin;

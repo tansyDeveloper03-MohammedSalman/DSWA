@@ -6,7 +6,12 @@ const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
-const { User, validate, validateLogin } = require("../models/user");
+const {
+  User,
+  validate,
+  validateLogin,
+  validatechangePassword
+} = require("../models/user");
 const { auditLogin, auditLoginvalidate } = require("../models/audit_login");
 const ip = require("ip");
 const device = require("express-device");
@@ -86,10 +91,13 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/changepassword", auth, async (req, res) => {
-  const { error } = validate(req.params.password);
-  if (error) return res.status(400).send(error.details[0].message);
+  const { errors, isValid } = validatechangePassword(req.body);
+  if (!isValid) {
+    return res.status(400).send(errors);
+  }
 
   let users = await User.findOne({ _id: req.user._id });
+
   if (!users)
     return res.status(400).send("The user with the given ID was not found.");
 
