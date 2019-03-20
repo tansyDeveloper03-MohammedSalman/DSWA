@@ -4,6 +4,7 @@ const express = require("express");
 const config = require("config");
 const app = express();
 const profile = require("./routes/profile");
+const nodemailer = require("nodemailer");
 
 config["jwtPrivateKey"] = "mySecureKey";
 
@@ -34,6 +35,38 @@ mongoose
 //   .then(() => console.log("Connected to MongoDB..."))
 //   .catch(err => console.error("Could not connect to MongoDB..."));
 // export dswa_jwtPrivateKey=mySecureKey
+
+app.post("/send", async (req, res) => {
+  const output = req.body.name;
+  let transporter = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: "8797f9a2b1ba7d", // generated ethereal user
+      pass: "3f4ad32d28b0fc" // generated ethereal password
+    }
+  });
+  console.log(transporter);
+  // setup email data with unicode symbols
+  let mailOptions = {
+    from: '"Node Mailer Contact 👻" <aruninfo333@gmail.com>', // sender address
+    to: "dasari.arun@tansycloud.com", // list of receivers
+    subject: "Node Contact Request", // Subject line
+    text: "Hello world?", // plain text body
+    html: output // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+    res.send(output);
+  });
+});
 
 app.use("/api/dswa", User);
 // app.use("/feeds", feed);
