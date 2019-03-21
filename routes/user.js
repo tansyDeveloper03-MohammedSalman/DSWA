@@ -1,5 +1,4 @@
 const auth = require("../middleware/auth");
-const request = require("request");
 const admin = require("../middleware/admin");
 const config = require("config");
 const jwt = require("jsonwebtoken");
@@ -102,8 +101,8 @@ router.post("/changepassword", auth, async (req, res) => {
   if (!users)
     return res.status(400).send("The user with the given ID was not found.");
 
-  const validPassword = req.body.password === users.password;
-  if (validPassword) return res.status(400).send("Using same password");
+  // const validPassword = req.body.password === users.password;
+  // if (validPassword) return res.status(400).send("Using same password");
 
   let user = await User.findByIdAndUpdate(req.user._id, {
     password: req.body.password
