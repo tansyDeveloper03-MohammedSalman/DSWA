@@ -8,11 +8,14 @@ const express = require("express");
 const router = express.Router();
 const {
   User,
+  validateUser,
   validate,
-  validateLogin,
-  validatechangePassword
+  validatechangePassword,
+  validateforgotPassword,
+  validateresetpassword
 } = require("../models/user");
 const { auditLogin, auditLoginvalidate } = require("../models/audit_login");
+const { Email } = require("../routes/email/email");
 const ip = require("ip");
 const device = require("express-device");
 router.use(device.capture());
@@ -25,7 +28,7 @@ router.post("/signup", async (req, res) => {
   }
   console.log(errors);
   let users = await User.findOne({ email: req.body.email });
-  if (users) return res.status(400).send("This email was used");
+  if (users) return res.status(400).send({ msg: "This email was used" });
 
   let user = new User(
     _.pick(req.body, [
@@ -115,24 +118,46 @@ router.post("/changepassword", auth, async (req, res) => {
 });
 
 router.post("/forgotpassword", async (req, res) => {
-  const { error } = validate(req.params.password);
-  if (error) return res.status(400).send(error.details[0].message);
+  const { errors, isValid } = validateforgotPassword(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
+
+  if (!isValid) {
+    return res.status(400).send(errors);
+  }
 
   let users = await User.findOne({ email: req.body.email });
-  if (!users) return res.status(400).send("The given email was not found.");
+  if (!users)
+    return res.status(400).send({ msg: "The given email was not found." });
 
+  if (users) {
+    Email(users);
+    res.status(400).send({ msg: "The mail was send" });
+  }
+});
+
+router.post("/resetPassword", async (req, res) => {
+  const { errors, isValid } = validateresetpassword(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
+
+  if (!isValid) {
+    return res.status(400).send(errors);
+  }
+  let users = await User.findOne({ _id: req.body.id });
+
+  if (!users)
+    return res.status(400).send({ msg: "The given email was not found." });
   const validPassword = req.body.password === users.password;
-  if (validPassword) return res.status(400).send("Using same password");
+  if (validPassword)
+    return res.status(400).send({ msg: "Using same password" });
 
-  //   console.log(req.user.email);
+  // //   console.log(req.user.email);
   let user = await User.findByIdAndUpdate(users._id, {
     password: req.body.password
   })
     .then(() => console.log("updated"))
     .catch(err => console.error("update error"));
   let updatedUser = await User.findOne({ email: req.body.email });
-
-  res.status(200).send(updatedUser);
+  return res.status(400).send({ msg: "The change password was done" });
 });
 
 /* GET LOGOUT */
