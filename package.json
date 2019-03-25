@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "dswa_ui-install": "npm install --prefix ../dswa_ui",
-    "dswa_ui": "npm start --prefix ../dswa_ui",
+    "dswa_ui-install": "npm install --prefix dswa_ui",
+    "dswa_ui": "npm start --prefix dswa_ui",
     "dev": "concurrently \"npm run server\" \"npm run dswa_ui\""
   },
   "author": "",
