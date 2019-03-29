@@ -10,6 +10,7 @@ const {
   User,
   validateUser,
   validate,
+  validateLogin,
   validatechangePassword,
   validateforgotPassword,
   validateresetpassword

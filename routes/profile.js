@@ -19,8 +19,7 @@ const {
 // @access        private
 router.get("/", auth, async (req, res) => {
   const errors = {};
-
-  Profile.findOne({ user: req.user.id })
+  Profile.findOne({ user: req.user._id })
     .populate("user", ["name"])
     .then(profile => {
       if (!profile) {
@@ -100,7 +99,7 @@ router.post("/", auth, (req, res) => {
   }
 
   const profileFields = {};
-  profileFields.user = req.user.id;
+  profileFields.user = req.user._id;
   if (req.body.handle) profileFields.handle = req.body.handle;
   if (req.body.company) profileFields.company = req.body.company;
   if (req.body.website) profileFields.website = req.body.website;
@@ -124,7 +123,6 @@ router.post("/", auth, (req, res) => {
   if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
   Profile.findOne({ user: req.user.id }).then(profile => {
-    console.log(profile);
     if (profile) {
       // update
       Profile.findOneAndUpdate(

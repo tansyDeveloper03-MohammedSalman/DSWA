@@ -5,8 +5,7 @@ const isEmpty = require("./is_empty");
 
 const ProfileSchema = new Schema({
   user: {
-    type: Schema.Types.ObjectId,
-    ref: "user"
+    type: String
   },
   handle: {
     type: String,
