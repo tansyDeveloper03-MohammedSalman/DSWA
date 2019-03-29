@@ -122,7 +122,7 @@ router.post("/", auth, (req, res) => {
   if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
   if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
-  Profile.findOne({ user: req.user.id }).then(profile => {
+  Profile.findOne({ user: req.user._id }).then(profile => {
     if (profile) {
       // update
       Profile.findOneAndUpdate(
