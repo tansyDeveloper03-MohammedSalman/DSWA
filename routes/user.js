@@ -57,17 +57,17 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { errors, isValid } = validateLogin(req.body);
-
   if (!isValid) {
     return res.status(400).send(errors);
   }
 
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("Invalid email");
+  if (!user) return res.status(400).send({ email: "Invalid email" });
   // console.log(user);
   const validPassword = req.body.password === user.password;
 
-  if (!validPassword) return res.status(400).send("Invalid email and password");
+  if (!validPassword)
+    return res.status(400).send({ password: "Invalid password" });
 
   const payload = {
     _id: user._id,
