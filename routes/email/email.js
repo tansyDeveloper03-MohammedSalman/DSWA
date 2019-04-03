@@ -1,9 +1,9 @@
 const AWS = require("aws-sdk");
 function Email(data) {
   AWS.config.update({
-    accessKeyId: "AKIASQKMXSW57H5ZL3XV",
-    secretAccessKey: "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",
-    region: "us-east-1"
+    // accessKeyId: "AKIASQKMXSW57H5ZL3XV",
+    // secretAccessKey: "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",
+    // region: "us-east-1"
   });
 
   const ses = new AWS.SES({ apiVersion: "2010-12-01" });
