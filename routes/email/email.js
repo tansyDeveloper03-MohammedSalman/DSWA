@@ -1,61 +1,56 @@
-const nodemailer = require("nodemailer");
-const sgMail = require("@sendgrid/mail");
+const AWS = require("aws-sdk");
 function Email(data) {
-  // console.log(data);
-  // const output =
-  //   data.email + `<a href="http://localhost:3000/resetPassword"></a>`;
-  // let transporter = nodemailer.createTransport({
-  //   host: "smtp.mailtrap.io",
-  //   port: 2525,
-  //   secure: false, // true for 465, false for other ports
-  //   auth: {
-  //     user: "168a2efbd226bb", // generated ethereal user
-  //     pass: "5f7cc53882d415" // generated ethereal password
-  //   }
-  // });
+  AWS.config.update({
+    accessKeyId: "AKIASQKMXSW57H5ZL3XV",
+    secretAccessKey: "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",
+    region: "us-east-1"
+  });
 
-  // // setup email data with unicode symbols
-  // let mailOptions = {
-  //   from: '"Node Mailer Contact 👻" <aruninfo333@gmail.com>', // sender address
-  //   to: data.email, // list of receivers
-  //   subject: "Node Contact Request", // Subject line
-  //   text: "Hello world?", // plain text body
-  //   html: output // html body
-  // };
+  const ses = new AWS.SES({ apiVersion: "2010-12-01" });
 
-  // // send mail with defined transport object
-  // transporter.sendMail(mailOptions, (error, info) => {
-  //   if (error) {
-  //     return console.log(error);
-  //   } else {
-  //     console.log("Email sent: " + info.response);
-  //   }
-  //   console.log("Message sent: %s", info.messageId);
-  //   // Preview only available when sending through an Ethereal account
-  //   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  //   res.send(output);
-  // });
-  SENDGRID_API_KEY =
-    "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";
-  sgMail.setApiKey(SENDGRID_API_KEY);
+  // send to list
+  var to = [data.email];
+
+  // this must relate to a verified SES account
+  var from = "dasari.arun@tansycloud.com";
+
   resetPasswordLink =
     "http://localhost:3000/user/" +
     encodeURIComponent(data._id) +
     "/resetPassword/";
-  const msg = {
-    to: data.email,
-    from: "dasari.arun@tansycloud.com",
-    subject: "Sending with SendGrid is Fun",
-    text:
-      "Hello " +
-      data.first_name +
-      " " +
-      data.last_name +
-      "; please click on this link to reset your password: " +
-      resetPasswordLink
-    // html: "<strong>and easy to do anywhere, even with Node.js</strong>"
-  };
-  sgMail.send(msg);
+  // this sends the email
+  // @todo - add HTML version
+  const sendEmail = ses
+    .sendEmail({
+      Source: from,
+      Destination: { ToAddresses: to },
+      Message: {
+        Subject: {
+          Data: "A Message To You Rudy"
+        },
+        Body: {
+          Text: {
+            Charset: "UTF-8",
+            Data:
+              "Hello " +
+              data.first_name +
+              " " +
+              data.last_name +
+              "; please click on this link to reset your password: " +
+              resetPasswordLink
+          }
+        }
+      }
+    })
+    .promise();
+  sendEmail
+    .then(data => {
+      console.log("email was send");
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
   return data;
 }
 

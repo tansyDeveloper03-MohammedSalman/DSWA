@@ -4,8 +4,6 @@ const express = require("express");
 const config = require("config");
 const app = express();
 const profile = require("./routes/profile");
-const nodemailer = require("nodemailer");
-const sgMail = require("@sendgrid/mail");
 
 config["jwtPrivateKey"] = "mySecureKey";
 
